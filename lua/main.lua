@@ -17,8 +17,10 @@ local box = ui.ModelView(mainBounds, assets.box)
 app.mainView = box
 
 local controls = ui.Surface(ui.Bounds(2, 1.2, -2,   1, 1.5, 0.01))
-function makeControls(label, nodeName, y, delta)
+function makeControls(nodeName, y, delta, rot)
+    local label = nodeName
     local controlledPose = ui.Pose(0,0,0)
+    controlledPose:rotate(unpack(rot))
     local button = controls:addSubview(ui.Button(ui.Bounds(0.0, y, 0.05,   0.2, 0.2, 0.1)))
     button.label:setText(label.."+")
     button.label.lineHeight = 0.05
@@ -38,15 +40,18 @@ function makeControls(label, nodeName, y, delta)
     button.label:setText(label.."R")
     button.label.lineHeight = 0.05
     button.onActivated = function()
-        controlledPose:identity()
+        controlledPose:identity():rotate(unpack(rot))
         box:resetNode(nodeName)
     end
 end
-makeControls("bott", "Bone.001", 0.6, {0.0, 0.3, 0})
-makeControls("left", "Bone.002", 0.3, {0.3, 0.0, 0})
-makeControls("right", "Bone.003", 0,   {0.3, 0.0, 0})
-makeControls("top", "Bone.004", -0.3,{0.0, 0.3, 0})
-makeControls("back", "Bone.005", -0.6,{0.0, 0.3, 0})
+
+local n = 0.5773503
+makeControls("top",    0.6, {0.0,  0.3, 0},   {3.14,       0, 1, 0})
+makeControls("bottom", 0.3, {0.0, -0.3, 0},   {3.14,       0, 0, 1})
+makeControls("left",   0.0, {-0.3, 0.0, 0},   {3.14*(2/3), -n, n, -n})
+makeControls("right", -0.3, {0.3,  0.0, 0},   {3.14,       0, 1, 0})
+makeControls("front", -0.6, {0.0,  0,  -0.3}, {3.14,       0, 1, 0})
+makeControls("back",  -0.9, {0.0,  0,   0.3}, {3.14,       0, 1, 0})
 
 app:addRootView(controls)
 app:connect()
