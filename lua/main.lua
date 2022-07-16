@@ -1,3 +1,5 @@
+quat = require("modules.quat")
+
 local client = Client(
     arg[2], 
     "skeltest"
@@ -17,9 +19,10 @@ local box = ui.ModelView(mainBounds, assets.box)
 app.mainView = box
 
 local controls = ui.Surface(ui.Bounds(2, 1.2, -2,   1, 1.5, 0.01))
+controls.grabbable = true
 function makeControls(nodeName, y, delta, rot)
     local label = nodeName
-    local controlledPose = ui.Pose(0,0,0)
+    local controlledPose = ui.Pose(mat4.from_quaternion(quat(unpack(rot))))
     controlledPose:rotate(unpack(rot))
     local button = controls:addSubview(ui.Button(ui.Bounds(0.0, y, 0.05,   0.2, 0.2, 0.1)))
     button.label:setText(label.."+")
@@ -40,18 +43,18 @@ function makeControls(nodeName, y, delta, rot)
     button.label:setText(label.."R")
     button.label.lineHeight = 0.05
     button.onActivated = function()
-        controlledPose:identity():rotate(unpack(rot))
+        controlledPose = ui.Pose(mat4.from_quaternion(quat(unpack(rot))))
         box:resetNode(nodeName)
     end
 end
 
 local n = 0.5773503
-makeControls("top",    0.6, {0.0,  0.3, 0},   {3.14,       0, 1, 0})
-makeControls("bottom", 0.3, {0.0, -0.3, 0},   {3.14,       0, 0, 1})
-makeControls("left",   0.0, {-0.3, 0.0, 0},   {3.14*(2/3), -n, n, -n})
-makeControls("right", -0.3, {0.3,  0.0, 0},   {3.14,       0, 1, 0})
-makeControls("front", -0.6, {0.0,  0,  -0.3}, {3.14,       0, 1, 0})
-makeControls("back",  -0.9, {0.0,  0,   0.3}, {3.14,       0, 1, 0})
+makeControls("top",    0.6, {0.0,  0.3, 0},   {0, 1, 0, 0})
+makeControls("bottom", 0.3, {0.0, -0.3, 0},   {0, 0, -1, 0})
+makeControls("left",   0.0, {-0.3, 0.0, 0},   {-0.5, 0.5, 0.5, 0.5})
+makeControls("right", -0.3, {0.3,  0.0, 0},   {-0.5, -0.5, -0.5, 0.5})
+makeControls("front", -0.6, {0.0,  0,  -0.3}, {-0.7, 0, 0, 0.7})
+makeControls("back",  -0.9, {0.0,  0,   0.3}, {0, 0.7, 0.7, 0})
 
 app:addRootView(controls)
 app:connect()
