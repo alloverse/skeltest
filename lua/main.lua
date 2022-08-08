@@ -40,6 +40,14 @@ controls.onFileDropped = function(view, filename, asset_id)
     end)
 end
 
+local quitButton = controls:addSubview(
+    ui.Button(ui.Bounds{size=ui.Size(0.12,0.12, 0.05 )}:move( 0.52, 1.0, 0.025))
+)
+quitButton:setDefaultTexture(assets.quit)
+quitButton.onActivated = function()
+  app:quit()
+end
+
 function makeControls(nodeName, y, delta, rot)
     local label = nodeName
     local controlledPose = ui.Pose(mat4.from_quaternion(quat(unpack(rot))))
