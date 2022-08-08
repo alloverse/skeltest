@@ -18,8 +18,28 @@ local box = ui.ModelView(mainBounds, assets.box)
 
 app.mainView = box
 
-local controls = ui.Surface(ui.Bounds(2, 1.2, -2,   1, 1.5, 0.01))
+local controls = ui.Surface(ui.Bounds(2, 1.2, -2,   1, 2.00, 0.01))
 controls.grabbable = true
+
+local label = controls:addSubview(ui.Label(ui.Bounds(0, 0.9, 0,    0.7, 0.10, 0.01)))
+label.wrap = true
+label:setText("box.glb (built-in)")
+label:setColor({0,0,0,1})
+
+controls.acceptedFileExtensions = {"glb"}
+controls.onFileDropped = function(view, filename, asset_id)
+    app.assetManager:load(asset_id, function (name, asset)
+        if asset then
+            label:setText(filename)
+            box:setAsset(asset)
+        else
+            local error = "Failed to load "..filename
+            print(error)
+            label:setText(error)
+        end
+    end)
+end
+
 function makeControls(nodeName, y, delta, rot)
     local label = nodeName
     local controlledPose = ui.Pose(mat4.from_quaternion(quat(unpack(rot))))
